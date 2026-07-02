@@ -131,7 +131,7 @@ img, svg { display: block; max-width: 100%; }
 .hero-waves { position: absolute; inset: 0; z-index: 0; }
 .hero-waves svg { width: 100%; height: 100%; }
 .hero-inner { position: relative; z-index: 1; max-width: 880px; }
-.hero-logo { width: clamp(200px, 28vw, 264px); height: auto; margin: 0 auto 12px; }
+.hero-logo { width: clamp(240px, 33vw, 340px); height: auto; margin: 0 auto 12px; }
 
 .hero h1 { font-size: clamp(2.3rem, 5.2vw, 4rem); font-weight: 800; text-wrap: balance; }
 .hero-sub { font-size: clamp(1.05rem, 1.6vw, 1.28rem); color: var(--slate); max-width: 640px; margin: 22px auto 34px; }
