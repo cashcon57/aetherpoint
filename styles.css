@@ -174,6 +174,29 @@ img, svg { display: block; max-width: 100%; }
 .service-card h3 { font-size: 1.25rem; margin-bottom: 10px; }
 .service-card p { color: var(--slate); font-size: .98rem; }
 
+/* ---------- Feature (photo + copy) ---------- */
+.feature-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+.feature-media img {
+  width: 100%; height: auto; display: block;
+  clip-path: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+  filter: drop-shadow(0 22px 42px rgba(11,31,58,.20));
+}
+.feature-copy h2 { font-size: clamp(1.8rem, 3.2vw, 2.5rem); }
+.feature-copy > p { color: var(--slate); font-size: 1.08rem; margin: 16px 0 24px; }
+.feature-checks { margin-bottom: 28px; gap: 14px; }
+.feature-checks li { align-items: center; }
+.feature-checks strong { color: var(--navy); font-size: 1.02rem; }
+
+/* ---------- Full-width photo band ---------- */
+.eyebrow--light { color: var(--cyan-2); }
+.photo-band {
+  position: relative; color: #fff; padding: 96px 0;
+  background: linear-gradient(115deg, rgba(11,31,58,.94) 0%, rgba(18,42,77,.82) 55%, rgba(11,31,58,.55) 100%), url('img/band-network.jpg') center/cover no-repeat;
+}
+.photo-band-inner { max-width: 720px; }
+.photo-band h2 { color: #fff; font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+.photo-band p { color: #c6d4e6; font-size: 1.1rem; margin-top: 14px; }
+
 /* ---------- Stats ---------- */
 .stats { background: var(--navy); position: relative; overflow: hidden; padding: 72px 0; }
 .stats::before { content: ""; position: absolute; inset: 0; background: radial-gradient(700px 300px at 20% 0%, rgba(31,159,212,.26), transparent 60%), radial-gradient(700px 300px at 90% 120%, rgba(92,199,232,.20), transparent 60%); }
@@ -321,7 +344,8 @@ a.area-chip:hover { background: var(--cyan); color: #fff; transform: translateY(
   .card-grid, .ind-grid { grid-template-columns: repeat(2, 1fr); }
   .steps { grid-template-columns: repeat(2, 1fr); }
   .steps::before { display: none; }
-  .why-inner, .contact-inner { grid-template-columns: 1fr; gap: 40px; }
+  .why-inner, .contact-inner, .feature-inner { grid-template-columns: 1fr; gap: 40px; }
+  .feature-media { order: -1; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
 }
