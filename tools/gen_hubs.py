@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""Render services/<slug>.html from hub_data.HUBS. Run from the repo root."""
+import html
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(__file__))
+from hub_data import HUBS  # noqa: E402
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+LUCIDE = "/Users/cashconway/CashWebDesign/assets/icons/lucide"
+SITE = "https://www.aetherpointadvisors.com"
+EMAIL = "contact@aetherpointadvisors.com"
+PHONE_TEL = "+15123488168"
+PHONE_SCHEMA = "+1-512-348-8168"
+PHONE_HUMAN = "(512) 348-8168"
+
+CHECK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
+MAIL_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>'
+PHONE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>'
+PIN_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>'
+
+SERVICES = [("Cybersecurity", "cybersecurity"), ("Mobility", "mobility"), ("Advanced Networking", "advanced-networking"),
+            ("Cloud & Managed Services", "cloud-managed-services"), ("IoT", "iot")]
+CHECKBOXES = ["Cybersecurity", "Mobility", "Advanced Networking", "Cloud & Managed Services", "IoT", "Customer Experience", "Other"]
+
+
+def e(s):
+    return html.escape(s, quote=True)
+
+
+def icon(name, size=26):
+    with open(os.path.join(LUCIDE, f"{name}.svg")) as f:
+        svg = f.read().strip()
+    return svg.replace("<svg ", f'<svg width="{size}" height="{size}" ', 1).replace('stroke="currentColor"', 'stroke="#fff"')
+
+
+def nav():
+    return f'''  <header class="site-header" id="header">
+    <div class="container header-inner">
+      <a href="../index.html" class="logo" aria-label="AetherPoint Digital Infrastructure Advisors home">
+        <img class="logo-img" src="../logo-horizontal.png" width="600" height="200" alt="AetherPoint Digital Infrastructure Advisors" />
+      </a>
+      <nav class="nav" id="nav">
+        <a href="../index.html#services">Services</a>
+        <a href="../index.html#solutions">Solutions</a>
+        <a href="../index.html#why">Why Us</a>
+        <a href="../index.html#areas">Locations</a>
+        <a href="#contact">Contact</a>
+        <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
+      </nav>
+      <a href="#contact" class="btn btn-primary header-cta">Get a Quote</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+'''
+
+
+def form(checked):
+    boxes = "\n".join(
+        f'              <label><input type="checkbox" name="services" value="{e(c)}"{" checked" if c == checked else ""} /> {e("Something else" if c == "Other" else c)}</label>'
+        for c in CHECKBOXES)
+    return f'''    <section class="section contact" id="contact">
+      <div class="container contact-inner">
+        <div class="contact-copy">
+          <span class="eyebrow">Get a Quote</span>
+          <h2>Tell us what you're looking for</h2>
+          <p>Describe what you need. Your advisor replies within one business day with next steps and has options ready within two to three.</p>
+          <ul class="contact-list">
+            <li><span class="ci">{MAIL_ICO}</span><a href="mailto:{EMAIL}">{EMAIL}</a></li>
+            <li><span class="ci">{PHONE_ICO}</span><a href="tel:{PHONE_TEL}">{PHONE_HUMAN}</a></li>
+            <li><span class="ci">{PIN_ICO}</span>Austin, TX &mdash; serving clients nationwide</li>
+          </ul>
+        </div>
+        <form class="contact-form" id="contactForm" novalidate>
+          <div class="field"><label for="name">Full name</label><input id="name" name="name" type="text" required placeholder="Jane Doe" autocomplete="name" /></div>
+          <div class="field"><label for="email">Work email</label><input id="email" name="email" type="email" required placeholder="jane@company.com" autocomplete="email" /></div>
+          <div class="field"><label for="phone">Phone <span class="muted">(optional)</span></label><input id="phone" name="phone" type="tel" placeholder="(512) 555-0100" autocomplete="tel" /></div>
+          <div class="field"><label for="company">Company <span class="muted">(optional)</span></label><input id="company" name="company" type="text" placeholder="Company name" autocomplete="organization" /></div>
+          <fieldset class="field">
+            <legend class="field-group-label">What are you looking for?</legend>
+            <div class="check-group">
+{boxes}
+            </div>
+            <p class="field-error" id="svcError" hidden>Pick at least one.</p>
+          </fieldset>
+          <div class="field"><label for="details">Details</label><textarea id="details" name="details" rows="4" required placeholder="e.g. ransomware protection for about 100 endpoints, and moving our lines to AT&amp;T"></textarea></div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-lg">Email My Request</button>
+            <button type="button" id="textBtn" class="btn btn-accent btn-lg">Text My Request</button>
+          </div>
+          <p class="form-note" id="formNote" hidden>Opening your email or text app with the details filled in &mdash; just hit send and we'll reply within one business day.</p>
+        </form>
+      </div>
+    </section>
+'''
+
+
+def footer():
+    links = "\n".join(f'        <a href="{s}.html">{e(n)}</a>' for n, s in SERVICES)
+    return f'''  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <a href="../index.html" class="logo logo--light"><span class="logo-text">Aether<strong>Point</strong></span></a>
+        <p>Independent IT advisory for businesses that want enterprise-grade technology without the enterprise runaround.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+{links}
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="../index.html#why">Why Us</a>
+        <a href="../index.html#process">Our Process</a>
+        <a href="../index.html#areas">Locations</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>&copy; 2026 AetherPoint Digital Infrastructure Advisors LLC. All rights reserved.</p>
+      <div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a></div>
+    </div>
+  </footer>
+'''
+
+
+def render(hub):
+    sections = []
+    for sec in hub["sections"]:
+        chips = "".join(f'<span class="chip">{e(i)}</span>' for i in sec["items"])
+        sections.append(f'''    <section class="hub-section">
+      <div class="container">
+        <h2>{e(sec["h2"])}</h2>
+        <p>{e(sec["p"])}</p>
+        <div class="chip-list">{chips}</div>
+      </div>
+    </section>
+''')
+    ai_chips = "".join(f'<span class="chip chip--ai">{e(i)}</span>' for i in hub["ai"])
+    sections.append(f'''    <section class="hub-section">
+      <div class="container">
+        <h2>AI-powered options</h2>
+        <p>Providers in this category now offer AI-driven capabilities. We'll tell you which ones are worth paying for.</p>
+        <div class="chip-list">{ai_chips}</div>
+      </div>
+    </section>
+''')
+    knows = [s["h2"] for s in hub["sections"]]
+    jsonld = ('{"@context":"https://schema.org","@type":"ProfessionalService","name":"AetherPoint Digital Infrastructure Advisors",'
+              f'"url":"{SITE}/services/{hub["slug"]}.html","description":"{e(hub["description"])}","email":"{EMAIL}","telephone":"{PHONE_SCHEMA}",'
+              '"address":{"@type":"PostalAddress","addressLocality":"Austin","addressRegion":"TX","addressCountry":"US"},'
+              '"areaServed":["Central Texas","United States"],'
+              f'"serviceType":"{e(hub["name"])}","knowsAbout":[{",".join(chr(34) + e(k) + chr(34) for k in knows)}]}}')
+    return f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{e(hub["title"])}</title>
+  <meta name="description" content="{e(hub["description"])}" />
+  <link rel="canonical" href="{SITE}/services/{hub["slug"]}.html" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../logo-transparent.png" />
+  <link rel="stylesheet" href="../styles.css" />
+  <script type="application/ld+json">{jsonld}</script>
+</head>
+<body>
+  <canvas id="lattice" aria-hidden="true"></canvas>
+
+{nav()}
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-inner">
+        <span class="svc-icon" style="--c1:#16294b;--c2:#2a86c4;margin:0 auto 18px">{icon(hub["icon"])}</span>
+        <span class="eyebrow">{e(hub["name"])}</span>
+        <h1>{e(hub["h1"])}</h1>
+        <p class="hero-sub">{e(hub["intro"])}</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn btn-primary btn-lg">Get a Quote</a>
+          <a href="tel:{PHONE_TEL}" class="btn btn-ghost btn-lg">Call {PHONE_HUMAN}</a>
+        </div>
+      </div>
+    </section>
+
+{"".join(sections)}
+    <section class="hub-section">
+      <div class="container">
+        <h2>Why go through AetherPoint</h2>
+        <div class="hub-why">
+          <div><strong>Wholesale pricing</strong><span>Provider promotions and negotiated rates you won't get from a single sales rep.</span></div>
+          <div><strong>One advisor, for good</strong><span>The same person on your account after go-live. No rep churn, no lost history.</span></div>
+          <div><strong>300+ providers</strong><span>We quote the options that fit, side by side, instead of one vendor's catalog.</span></div>
+        </div>
+        <p style="margin-top:22px"><a href="../index.html#solutions">See the full comparison &rarr;</a></p>
+      </div>
+    </section>
+
+{form(hub["checkbox"])}  </main>
+
+{footer()}  <script src="../script.js"></script>
+</body>
+</html>
+'''
+
+
+def main():
+    out_dir = os.path.join(ROOT, "services")
+    os.makedirs(out_dir, exist_ok=True)
+    for hub in HUBS:
+        path = os.path.join(out_dir, f'{hub["slug"]}.html')
+        with open(path, "w") as f:
+            f.write(render(hub))
+        print(f'wrote services/{hub["slug"]}.html')
+
+
+if __name__ == "__main__":
+    main()
