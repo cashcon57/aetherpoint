@@ -382,8 +382,8 @@ a.area-chip:hover { background: var(--cyan); color: #fff; transform: translateY(
 .hero--dark .hero-sub { color: #c6d4e6; }
 .hero--dark .hero-badges li { color: #dbe7f5; }
 .hero--dark .hero-badges svg { color: var(--cyan-2); }
-.hero--dark .btn-ghost { color: #fff; border-color: rgba(255,255,255,.45); }
-.hero--dark .btn-ghost:hover { background: rgba(255,255,255,.1); border-color: #fff; }
+.hero--dark .btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); }
+.hero--dark .btn-ghost:hover { background: rgba(255,255,255,.12); border-color: #fff; color: #fff; }
 .hero--dark .eyebrow { color: var(--cyan-2); }
 
 /* ---------- Featured service cards (top 3) ---------- */
