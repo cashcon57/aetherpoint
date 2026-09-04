@@ -3,6 +3,7 @@
 import html
 import json
 import os
+import re
 import sys
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -32,8 +33,13 @@ def e(s):
 
 def icon(name, size=26):
     with open(os.path.join(LUCIDE, f"{name}.svg")) as f:
-        svg = f.read().strip()
-    return svg.replace("<svg ", f'<svg width="{size}" height="{size}" ', 1).replace('stroke="currentColor"', 'stroke="#fff"')
+        svg = f.read()
+    svg = re.sub(r"<!--.*?-->", "", svg, flags=re.S)
+    svg = re.sub(r"\s+", " ", svg).strip()
+    svg = re.sub(r'\s*class="[^"]*"', "", svg, count=1)
+    svg = re.sub(r'width="\d+"', f'width="{size}"', svg, count=1)
+    svg = re.sub(r'height="\d+"', f'height="{size}"', svg, count=1)
+    return svg.replace('stroke="currentColor"', 'stroke="#fff"')
 
 
 def nav():
