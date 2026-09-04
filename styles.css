@@ -140,7 +140,7 @@ img, svg { display: block; max-width: 100%; }
 
 .hero-badges { list-style: none; display: flex; gap: 26px; justify-content: center; flex-wrap: wrap; margin-top: 36px; }
 .hero-badges li { display: flex; align-items: center; gap: 8px; font-size: .92rem; font-weight: 500; color: var(--slate); }
-.hero-badges svg { flex-shrink: 0; }
+.hero-badges svg { flex-shrink: 0; color: var(--cyan); }
 
 /* ---------- Logo wall ---------- */
 .logos { padding: 40px 0 10px; }
