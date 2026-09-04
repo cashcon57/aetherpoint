@@ -22,7 +22,7 @@ NAV = '''      <nav class="nav" id="nav">
         <a href="#services">Services</a>
         <a href="../index.html#solutions">Solutions</a>
         <a href="#why">Why Us</a>
-        <a href="../index.html#areas">Locations</a>
+        <a href="../index.html#areas">Service Areas</a>
         <a href="#contact">Contact</a>
         <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
       </nav>
