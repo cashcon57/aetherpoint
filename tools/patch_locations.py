@@ -81,7 +81,7 @@ CONTACT_FORM = '''        <form class="contact-form" id="contactForm" novalidate
             <label for="company">Company <span class="muted">(optional)</span></label>
             <input id="company" name="company" type="text" placeholder="Company name" autocomplete="organization" />
           </div>
-          <fieldset class="field">
+          <fieldset class="field" aria-describedby="svcError">
             <legend class="field-group-label">What are you looking for?</legend>
             <div class="check-group">
               <label><input type="checkbox" name="services" value="Cybersecurity" /> Cybersecurity</label>
@@ -92,7 +92,7 @@ CONTACT_FORM = '''        <form class="contact-form" id="contactForm" novalidate
               <label><input type="checkbox" name="services" value="Customer Experience" /> Customer Experience</label>
               <label><input type="checkbox" name="services" value="Other" /> Something else</label>
             </div>
-            <p class="field-error" id="svcError" hidden>Pick at least one.</p>
+            <p class="field-error" id="svcError" role="alert" hidden>Pick at least one.</p>
           </fieldset>
           <div class="field">
             <label for="details">Details</label>
