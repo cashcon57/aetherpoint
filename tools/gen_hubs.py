@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Render services/<slug>.html from hub_data.HUBS. Run from the repo root."""
 import html
+import json
 import os
 import sys
 
@@ -148,11 +149,19 @@ def render(hub):
     </section>
 ''')
     knows = [s["h2"] for s in hub["sections"]]
-    jsonld = ('{"@context":"https://schema.org","@type":"ProfessionalService","name":"AetherPoint Digital Infrastructure Advisors",'
-              f'"url":"{SITE}/services/{hub["slug"]}.html","description":"{e(hub["description"])}","email":"{EMAIL}","telephone":"{PHONE_SCHEMA}",'
-              '"address":{"@type":"PostalAddress","addressLocality":"Austin","addressRegion":"TX","addressCountry":"US"},'
-              '"areaServed":["Central Texas","United States"],'
-              f'"serviceType":"{e(hub["name"])}","knowsAbout":[{",".join(chr(34) + e(k) + chr(34) for k in knows)}]}}')
+    jsonld = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "AetherPoint Digital Infrastructure Advisors",
+        "url": f"{SITE}/services/{hub['slug']}.html",
+        "description": hub["description"],
+        "email": EMAIL,
+        "telephone": PHONE_SCHEMA,
+        "address": {"@type": "PostalAddress", "addressLocality": "Austin", "addressRegion": "TX", "addressCountry": "US"},
+        "areaServed": ["Central Texas", "United States"],
+        "serviceType": hub["name"],
+        "knowsAbout": knows,
+    }, ensure_ascii=False, separators=(",", ":"))
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>

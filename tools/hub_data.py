@@ -73,7 +73,7 @@ HUBS = [
         "icon": "cloud",
         "title": "Cloud & Managed Services: AWS, Azure, GCP, Colocation & IT Outsourcing | AetherPoint",
         "description": "Public, private, and hybrid cloud, cloud connectivity, storage, colocation, DRaaS, software licensing, and helpdesk or IT outsourcing, sourced and negotiated by one independent advisor.",
-        "h1": "Cloud & Managed Services for Growing Businesses",
+        "h1": "Cloud & Managed Service Solutions for Growing Businesses",
         "intro": "Move to the cloud, connect to it faster, or hand off day-to-day IT. AetherPoint compares hyperscalers, private-cloud and colocation providers, and managed-service partners so you get the right fit at negotiated pricing.",
         "sections": [
             {"h2": "Cloud Connectivity", "p": "Private, low-latency paths into the clouds you already use.",
