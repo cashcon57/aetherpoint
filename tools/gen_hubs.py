@@ -11,15 +11,16 @@ from hub_data import HUBS  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LUCIDE = os.environ.get("LUCIDE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "icons"))
-SITE = "https://www.aetherpointadvisors.com"
+# TODO at DNS cutover: switch to https://www.aetherpointadvisors.com and regenerate
+SITE = "https://cashcon57.github.io/aetherpoint"
 EMAIL = "contact@aetherpointadvisors.com"
 PHONE_TEL = "+15123488168"
 PHONE_SCHEMA = "+1-512-348-8168"
 PHONE_HUMAN = "(512) 348-8168"
 
-MAIL_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>'
-PHONE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>'
-PIN_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>'
+MAIL_ICO = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>'
+PHONE_ICO = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>'
+PIN_ICO = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>'
 
 SERVICES = [("Cybersecurity", "cybersecurity"), ("Mobility", "mobility"), ("Advanced Networking", "advanced-networking"),
             ("Cloud & Managed Services", "cloud-managed-services"), ("IoT", "iot")]
@@ -38,6 +39,7 @@ def icon(name, size=26):
     svg = re.sub(r'\s*class="[^"]*"', "", svg, count=1)
     svg = re.sub(r'width="\d+"', f'width="{size}"', svg, count=1)
     svg = re.sub(r'height="\d+"', f'height="{size}"', svg, count=1)
+    svg = svg.replace("<svg ", '<svg aria-hidden="true" ', 1)
     return svg.replace('stroke="currentColor"', 'stroke="#fff"')
 
 
@@ -56,7 +58,7 @@ def nav():
         <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
       </nav>
       <a href="#contact" class="btn btn-primary header-cta">Get a Quote</a>
-      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="nav" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -85,12 +87,12 @@ def form(checked):
           <div class="field"><label for="email">Work email</label><input id="email" name="email" type="email" required placeholder="jane@company.com" autocomplete="email" /></div>
           <div class="field"><label for="phone">Phone <span class="muted">(optional)</span></label><input id="phone" name="phone" type="tel" placeholder="(512) 555-0100" autocomplete="tel" /></div>
           <div class="field"><label for="company">Company <span class="muted">(optional)</span></label><input id="company" name="company" type="text" placeholder="Company name" autocomplete="organization" /></div>
-          <fieldset class="field">
+          <fieldset class="field" aria-describedby="svcError">
             <legend class="field-group-label">What are you looking for?</legend>
             <div class="check-group">
 {boxes}
             </div>
-            <p class="field-error" id="svcError" hidden>Pick at least one.</p>
+            <p class="field-error" id="svcError" role="alert" hidden>Pick at least one.</p>
           </fieldset>
           <div class="field"><label for="details">Details</label><textarea id="details" name="details" rows="4" required placeholder="e.g. ransomware protection for about 100 endpoints, and moving our lines to AT&amp;T"></textarea></div>
           <div class="form-actions">
@@ -111,7 +113,7 @@ def footer():
       <div class="footer-brand">
         <a href="../index.html" class="logo logo--light">
           <span class="logo-mark" aria-hidden="true">
-            <svg viewBox="0 0 32 32" width="30" height="30">
+            <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true">
               <defs><radialGradient id="starF" cx="50%" cy="44%" r="62%">
                 <stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#7ad6ef"/><stop offset=".7" stop-color="#2fa6dd"/><stop offset="1" stop-color="#2a86c4"/>
               </radialGradient></defs>
@@ -189,16 +191,14 @@ def render(hub):
     knows = [s["h2"] for s in hub["sections"]]
     jsonld = json.dumps({
         "@context": "https://schema.org",
-        "@type": "ProfessionalService",
-        "name": "AetherPoint Digital Infrastructure Advisors",
+        "@type": "Service",
+        "name": hub["name"],
+        "serviceType": hub["name"],
         "url": f"{SITE}/services/{hub['slug']}.html",
         "description": hub["description"],
-        "email": EMAIL,
-        "telephone": PHONE_SCHEMA,
-        "address": {"@type": "PostalAddress", "addressLocality": "Austin", "addressRegion": "TX", "addressCountry": "US"},
         "areaServed": ["Central Texas", "United States"],
-        "serviceType": hub["name"],
-        "knowsAbout": knows,
+        "provider": {"@type": "ProfessionalService", "@id": f"{SITE}/#org", "name": "AetherPoint Digital Infrastructure Advisors", "telephone": PHONE_SCHEMA, "email": EMAIL, "url": f"{SITE}/"},
+        "hasOfferCatalog": {"@type": "OfferCatalog", "name": hub["name"], "itemListElement": [{"@type": "Offer", "itemOffered": {"@type": "Service", "name": k}} for k in knows]},
     }, ensure_ascii=False, separators=(",", ":"))
     return f'''<!DOCTYPE html>
 <html lang="en">
