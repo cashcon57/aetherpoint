@@ -33,7 +33,7 @@ NAV = '''      <nav class="nav" id="nav">
 
 BADGES = f'''        <ul class="hero-badges">
           <li>{CHECK} 20+ years in IT</li>
-          <li>{CHECK} 300+ carriers &amp; providers</li>
+          <li>{CHECK} Hundreds of carriers &amp; providers</li>
           <li>{CHECK} One advisor, one direct line</li>
         </ul>'''
 
@@ -202,6 +202,13 @@ TEXT_REPLACEMENTS = [
      'We source your cloud, security, and connectivity from the best-fit providers'),
     ('We handle your cloud, security, and connectivity, and act as your independent advisor across providers',
      'We source your cloud, security, and connectivity, and act as your independent advisor across providers'),
+    # Generic normalizer, last on purpose: it softens the "300+" wording that the
+    # entries above still emit, so those entries keep matching the pre-patch prose
+    # while the rendered pages end up saying "hundreds of". The "&amp;" and bare
+    # "300+ providers" forms are deliberately absent: BADGES, meta_description, and
+    # schema_description now emit "hundreds of" directly, so entries for them would
+    # never fire and the fresh-page replacement audit would fail.
+    ('300+ carriers and providers', 'hundreds of carriers and providers'),
 ]
 
 # Claims AetherPoint cannot make as an advisor compensated by the providers.
@@ -232,7 +239,7 @@ def sub_once(pattern, repl, s, path, flags=re.S):
 
 def meta_description(area):
     d = (f"AetherPoint is an independent IT advisor for businesses in {area}. "
-         "One advisor, 300+ carriers and providers, and a reply within one business day.")
+         "One advisor, hundreds of providers, and a reply within one business day.")
     assert len(d) < 160, (area, len(d))
     return d
 
@@ -253,7 +260,7 @@ def fonts_block(url):
 
 def schema_description(area):
     return ("Independent IT advisor sourcing cybersecurity, mobility, advanced networking, "
-            f"cloud, and IoT solutions from 300+ providers for businesses in {area}.")
+            f"cloud, and IoT solutions from hundreds of providers for businesses in {area}.")
 
 
 def schema_block(payload, area):

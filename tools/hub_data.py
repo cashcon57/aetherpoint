@@ -47,7 +47,7 @@ HUBS = [
         "checkbox": "Advanced Networking",
         "icon": "network",
         "title": "Advanced Networking & SD-WAN | AetherPoint",
-        "description": "Dedicated fiber, broadband, 5G and satellite internet, SD-WAN with auto-failover, SASE, managed WiFi, and firewalls, quoted from 300+ carriers.",
+        "description": "Dedicated fiber, broadband, 5G and satellite internet, SD-WAN with auto-failover, SASE, managed WiFi, and firewalls, quoted from hundreds of carriers.",
         "h1": "Advanced Networking Solutions for Growing Businesses",
         "intro": "Connectivity engineered for uptime. AetherPoint pulls quotes from the carriers that serve your address, designs failover so one outage never takes you down, and layers in security and monitoring from the same providers.",
         "sections": [
