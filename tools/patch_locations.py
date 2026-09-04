@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""Patch shared markup in locations/*.html. Idempotent. Run from repo root."""
+"""Patch shared markup in locations/*.html. Idempotent. Run from repo root.
+
+Pass --check to compare CONTACT_FORM against the live form in index.html and exit
+without writing anything. The location pages must stay template-generated: the
+patterns below are indentation-sensitive, so hand-editing a page's whitespace will
+break the next run.
+"""
+import difflib
 import glob
 import os
 import re
@@ -63,7 +70,8 @@ FOOTER_SERVICES = '''      <div class="footer-col">
       </div>'''
 
 # Copied verbatim from index.html so location pages match the form script.js expects
-# (phone, services checkboxes, details, #svcError).
+# (phone, services checkboxes, details, #svcError). Run with --check to detect drift.
+FORM_RE = r'        <form class="contact-form" id="contactForm" novalidate>.*?</form>'
 CONTACT_FORM = '''        <form class="contact-form" id="contactForm" novalidate>
           <div class="field">
             <label for="name">Full name</label>
@@ -127,7 +135,10 @@ TEXT_REPLACEMENTS = [
      '<p>Sourced from 300+ carriers and providers and managed through one advisor &mdash; enterprise-grade technology, right-sized for your business.</p>'),
     ('<p>From day-to-day help desk to Dell hardware and VoIP phones &mdash; enterprise-grade IT, right-sized for small and growing businesses.</p>',
      '<p>Sourced from 300+ carriers and providers and managed through one advisor &mdash; enterprise-grade technology, right-sized for your business.</p>'),
-    # Why-copy paragraphs on individual cities
+    # Why-copy paragraphs on individual cities.
+    # Order matters: the philadelphia flat-pricing entry further down keys on the
+    # "and handle the sourcing" text that the HIPAA/SOC 2 entry below produces, so
+    # these three must run first.
     ('We provide SOC 2-ready managed IT, modernize your cloud, and source the best providers',
      'We match you with providers that meet your compliance requirements, modernize your cloud, and handle the sourcing'),
     ('We provide HIPAA- and SOC 2-ready managed IT, modernize your cloud, and source the best providers',
@@ -155,6 +166,8 @@ TEXT_REPLACEMENTS = [
      'and handle the sourcing &mdash; with 300+ carriers and providers behind you and a direct line to a 20-year veteran.'),
     ('and connect you with the right cloud and telecom providers &mdash; with flat, predictable pricing.',
      'and connect you with the right cloud and telecom providers &mdash; with quotes up front and one advisor on call.'),
+    # AetherPoint is an advisor, not an engineering shop.
+    ('with a direct line to a real engineer.', 'with a direct line to a real advisor.'),
 ]
 
 
@@ -172,8 +185,28 @@ def meta_description(area):
     return d
 
 
-def patch(path):
+def check_form():
+    """Fail loudly if index.html's contact form has drifted from CONTACT_FORM."""
+    idx = os.path.join(ROOT, "index.html")
+    m = re.search(FORM_RE, open(idx).read(), re.S)
+    if not m:
+        print("index.html: contact form not found -- the form markup or its indentation changed")
+        return 1
+    if m.group(0) == CONTACT_FORM:
+        print("contact form in sync")
+        return 0
+    print("contact form has drifted from index.html; update CONTACT_FORM in this file:")
+    for line in difflib.unified_diff(CONTACT_FORM.splitlines(), m.group(0).splitlines(),
+                                     "patch_locations.CONTACT_FORM", "index.html", lineterm=""):
+        print(line)
+    return 1
+
+
+def patch(path, audit):
     s = open(path).read()
+    # A page still carrying the pre-patch nav is "fresh"; only fresh pages can be
+    # expected to contain the pre-patch strings the replacement audit looks for.
+    fresh = "Get a Free Assessment" in s
     city = re.search(r"<h1>.*?in <span class=\"grad-text\">(.*?)</span>", s, re.S)
     city = city.group(1) if city else ""
     area = re.search(r'"areaServed":"([^"]*)"', s)
@@ -185,7 +218,7 @@ def patch(path):
                  lambda m: m.group(1) + cards_html(city) + m.group(2), s, path)
     s = sub_once(r'(<div class="contact-copy">\s*)<span class="eyebrow">[^<]*</span>\s*<h2>.*?</h2>\s*<p>.*?</p>',
                  lambda m: m.group(1) + CONTACT_COPY.lstrip(), s, path)
-    s = sub_once(r'        <form class="contact-form" id="contactForm" novalidate>.*?</form>', lambda m: CONTACT_FORM, s, path)
+    s = sub_once(FORM_RE, lambda m: CONTACT_FORM, s, path)
     s = sub_once(r'      <div class="footer-col">\s*<h4>Services</h4>.*?</div>', lambda m: FOOTER_SERVICES, s, path)
     s = sub_once(r'(<div class="footer-brand">.*?</a>\s*)<p>.*?</p>', lambda m: m.group(1) + FOOTER_BRAND_P, s, path)
     s = sub_once(r'<meta name="description" content="[^"]*" />',
@@ -195,20 +228,39 @@ def patch(path):
     # Homepage-parity footer cleanup (no-ops on pages that never had these blocks).
     s = re.sub(r'\s*<div class="footer-col footer-news">.*?</form>\s*</div>', "", s, count=1, flags=re.S)
     s = re.sub(r'\s*<div class="socials">.*?</div>', "", s, count=1, flags=re.S)
-    s = re.sub(r'<a href="[^"]*">Security</a>', "", s, count=1)
 
-    for old, new in TEXT_REPLACEMENTS:
+    for i, (old, new) in enumerate(TEXT_REPLACEMENTS):
+        if fresh:
+            audit[i] += s.count(old)
         s = s.replace(old, new)
 
     open(path, "w").write(s)
+    return fresh
 
 
-def main():
+def main(argv):
+    if "--check" in argv[1:]:
+        return check_form()
+
     paths = sorted(glob.glob(os.path.join(ROOT, "locations", "*.html")))
+    audit = [0] * len(TEXT_REPLACEMENTS)
+    fresh = 0
     for p in paths:
-        patch(p)
+        fresh += patch(p, audit)
     print(f"patched {len(paths)} location pages")
+
+    if not fresh:
+        print("already patched, replacement audit skipped")
+        return 0
+    dead = [old for old, n in zip((o for o, _ in TEXT_REPLACEMENTS), audit) if n == 0]
+    if dead:
+        print(f"{len(dead)} replacement(s) matched nothing across {fresh} fresh page(s):")
+        for old in dead:
+            print(f"  {old[:110]}")
+        return 1
+    print(f"replacement audit: all {len(TEXT_REPLACEMENTS)} entries fired across {fresh} fresh page(s)")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv))
