@@ -17,6 +17,7 @@ EMAIL = "contact@aetherpointadvisors.com"
 PHONE_TEL = "+15123488168"
 PHONE_SCHEMA = "+1-512-348-8168"
 PHONE_HUMAN = "(512) 348-8168"
+FONTS = "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap"
 
 MAIL_ICO = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>'
 PHONE_ICO = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>'
@@ -161,13 +162,14 @@ def footer():
 
     <div class="container footer-bottom">
       <p>&copy; 2026 AetherPoint Digital Infrastructure Advisors LLC. All rights reserved.</p>
-      <div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a></div>
+      <div class="footer-legal"><a href="../index.html#services">Services</a><a href="#contact">Contact</a></div>
     </div>
   </footer>
 '''
 
 
 def render(hub):
+    assert len(hub["title"]) <= 60 and len(hub["description"]) <= 158, hub["slug"]
     sections = []
     for sec in hub["sections"]:
         chips = "".join(f'<span class="chip">{e(i)}</span>' for i in sec["items"])
@@ -210,7 +212,9 @@ def render(hub):
   <link rel="canonical" href="{SITE}/services/{hub["slug"]}.html" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="{FONTS}" />
+  <link rel="stylesheet" href="{FONTS}" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="{FONTS}" /></noscript>
   <link rel="icon" type="image/png" href="../logo-transparent.png" />
   <link rel="stylesheet" href="../styles.css" />
   <script type="application/ld+json">{jsonld}</script>
@@ -254,16 +258,50 @@ def render(hub):
 '''
 
 
+# Claims we cannot substantiate for a one-person advisory. Keep hub copy clean.
+FORBIDDEN = [
+    r"24/7",
+    r"\d+-minute",
+    r"\bSLA\b",
+    r"SOC 2",
+    r"HIPAA",
+    r"flat (monthly|pricing)",
+    r"\bengineers?\b",
+    r"guarantee",
+]
+
+
+def scan_forbidden(pages):
+    """Return a list of (slug, pattern, excerpt) for every forbidden phrase found."""
+    hits = []
+    for slug, content in pages:
+        for pat in FORBIDDEN:
+            for m in re.finditer(pat, content, re.I):
+                hits.append((slug, pat, content[max(0, m.start() - 50):m.end() + 30].replace("\n", " ")))
+    return hits
+
+
 def main():
     out_dir = os.path.join(ROOT, "services")
     os.makedirs(out_dir, exist_ok=True)
+    pages = []
     for hub in HUBS:
         path = os.path.join(out_dir, f'{hub["slug"]}.html')
         content = render(hub)
         with open(path, "w") as f:
             f.write(content)
+        pages.append((hub["slug"], content))
         print(f'wrote services/{hub["slug"]}.html')
+
+    hits = scan_forbidden(pages)
+    if hits:
+        for slug, pat, excerpt in hits:
+            print(f"FORBIDDEN {slug}: {pat} -> ...{excerpt}...", file=sys.stderr)
+        print(f"{len(hits)} unsubstantiated claim(s) found", file=sys.stderr)
+        return 1
+    print(f"claim scan: clean across {len(pages)} page(s)")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

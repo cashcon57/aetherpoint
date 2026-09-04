@@ -8,6 +8,7 @@ break the next run.
 """
 import difflib
 import glob
+import json
 import os
 import re
 import sys
@@ -16,6 +17,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 from gen_hubs import icon  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# TODO at DNS cutover: switch to https://www.aetherpointadvisors.com and regenerate
+SITE = "https://cashcon57.github.io/aetherpoint"
 CHECK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
 
 NAV = '''      <nav class="nav" id="nav">
@@ -168,6 +171,55 @@ TEXT_REPLACEMENTS = [
      'and connect you with the right cloud and telecom providers &mdash; with quotes up front and one advisor on call.'),
     # AetherPoint is an advisor, not an engineering shop.
     ('with a direct line to a real engineer.', 'with a direct line to a real advisor.'),
+    # No response-time promise: AetherPoint does not run the NOC, the providers do.
+    ('with a 15-minute critical response promise and no long-term lock-in.',
+     'with one advisor on call and no long-term lock-in.'),
+    # MSP voice -> advisor voice: the providers manage and monitor, AetherPoint
+    # sources, negotiates, and coordinates. One entry per city so each sentence reads well.
+    ('We keep your systems monitored around the clock',
+     'We line up monitoring and security through the right providers'),
+    ('We line up monitoring and security through the right providers, harden your security, and negotiate',
+     'We line up monitoring and security through the right providers, and negotiate'),
+    ('keep everything monitored around the clock',
+     'line up monitoring through the right providers'),
+    ('We keep your systems secure and monitored, modernize your cloud, and cut through carrier and software sprawl',
+     'We source security and monitoring from vetted providers, modernize your cloud, and cut through carrier and software sprawl'),
+    ('We keep your systems secure and monitored, modernize your cloud, and negotiate the right telecom and software providers',
+     'We source security and monitoring from vetted providers, modernize your cloud, and negotiate the right telecom and software contracts'),
+    ('We keep your IT monitored and protected, modernize your cloud, and negotiate the right providers on your behalf',
+     'We source monitoring and protection from vetted providers, modernize your cloud, and negotiate on your behalf'),
+    ('We manage your IT remotely, harden your security, and connect you with the right cloud and telecom providers',
+     'We coordinate your IT remotely, tighten your security posture, and connect you with the right cloud and telecom providers'),
+    ('We manage your IT remotely, protect your data, and source the best cloud and telecom providers',
+     'We coordinate your IT remotely, line up data protection, and source the best cloud and telecom providers'),
+    ('We manage your IT remotely, harden your defenses, and negotiate the right cloud and telecom solutions on your behalf.',
+     'We coordinate your IT remotely, line up the right defenses, and negotiate cloud and telecom solutions on your behalf.'),
+    ('We deliver compliance-first managed IT, modernize your cloud, and connect you with the right providers &mdash; managed remotely with hands-on support.',
+     'We match you with compliance-first managed IT providers, modernize your cloud, and stay on the account &mdash; coordinated remotely with hands-on support.'),
+    ('We handle your cloud, security, and connectivity, and negotiate the right providers on your behalf',
+     'We source your cloud, security, and connectivity from vetted providers, and negotiate on your behalf'),
+    ('We handle your cloud, security, and connectivity, and source the best providers',
+     'We source your cloud, security, and connectivity from the best-fit providers'),
+    ('We handle your cloud, security, and connectivity, and act as your independent advisor across providers',
+     'We source your cloud, security, and connectivity, and act as your independent advisor across providers'),
+]
+
+# Claims AetherPoint cannot make as an advisor compensated by the providers.
+# "helpdesk or IT outsourcing" / "Helpdesk as a Service" are provider service
+# categories, not promises, so `help ?desk to` targets only the old prose voice.
+FORBIDDEN = [
+    r'24/7',
+    r'around the clock(?! by the provider)',
+    r'\d+-minute',
+    r'\bSLA\b',
+    r'SOC 2',
+    r'HIPAA',
+    r'flat (monthly|pricing)',
+    r'senior engineers?',
+    r'\bengineers?\b',
+    r'help ?desk to',
+    r'guarantee',
+    r'we (manage|monitor|keep .* monitored)',
 ]
 
 
@@ -183,6 +235,52 @@ def meta_description(area):
          "One advisor, 300+ carriers and providers, and a reply within one business day.")
     assert len(d) < 160, (area, len(d))
     return d
+
+
+# Matches the render-blocking font <link> or the already-expanded three-line block,
+# so a rerun rewrites its own output instead of failing to match.
+FONT_RE = (r'  <link href="(https://fonts\.googleapis\.com/css2\?[^"]*)" rel="stylesheet" />'
+           r'|  <link rel="preload" as="style" href="(https://fonts\.googleapis\.com/css2\?[^"]*)" />\n'
+           r'  <link rel="stylesheet" href="[^"]*" media="print" onload="this\.media=\'all\'" />\n'
+           r'  <noscript><link rel="stylesheet" href="[^"]*" /></noscript>')
+
+
+def fonts_block(url):
+    return (f'  <link rel="preload" as="style" href="{url}" />\n'
+            f'  <link rel="stylesheet" href="{url}" media="print" onload="this.media=\'all\'" />\n'
+            f'  <noscript><link rel="stylesheet" href="{url}" /></noscript>')
+
+
+def schema_block(payload, slug):
+    """Rebuild the ProfessionalService JSON-LD with a stable @id and a page url."""
+    d = json.loads(payload)
+    out = {
+        "@context": d["@context"],
+        "@type": d["@type"],
+        "@id": f"{SITE}/#org",
+        "name": d["name"],
+        "url": f"{SITE}/locations/{slug}.html",
+        "description": d["description"],
+        "areaServed": d["areaServed"],
+        "email": d["email"],
+        "telephone": d["telephone"],
+        "address": d["address"],
+        "knowsAbout": d["knowsAbout"],
+    }
+    return json.dumps(out, separators=(",", ":"), ensure_ascii=False)
+
+
+def scan_forbidden(paths):
+    """Fail on any claim the advisor model cannot support. aria-hidden art is skipped."""
+    hits = []
+    for p in paths:
+        for n, line in enumerate(open(p).read().splitlines(), 1):
+            if "aria-hidden" in line:
+                continue
+            for pat in FORBIDDEN:
+                if re.search(pat, line, re.I):
+                    hits.append((p, n, pat, line.strip()[:120]))
+    return hits
 
 
 def check_form():
@@ -207,10 +305,17 @@ def patch(path, audit):
     # A page still carrying the pre-patch nav is "fresh"; only fresh pages can be
     # expected to contain the pre-patch strings the replacement audit looks for.
     fresh = "Get a Free Assessment" in s
+    slug = os.path.splitext(os.path.basename(path))[0]
     city = re.search(r"<h1>.*?in <span class=\"grad-text\">(.*?)</span>", s, re.S)
     city = city.group(1) if city else ""
     area = re.search(r'"areaServed":"([^"]*)"', s)
     area = area.group(1) if area else city
+
+    s = sub_once(FONT_RE, lambda m: fonts_block(m.group(1) or m.group(2)), s, path)
+    s = sub_once(r'(  <link rel="stylesheet" href="\.\./styles\.css" />)(\n  <link rel="canonical" href="[^"]*" />)?',
+                 lambda m: f'{m.group(1)}\n  <link rel="canonical" href="{SITE}/locations/{slug}.html" />', s, path)
+    s = sub_once(r'<button class="nav-toggle" id="navToggle" aria-label="Open menu"(?: aria-controls="nav")? aria-expanded="false">',
+                 lambda m: '<button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="nav" aria-expanded="false">', s, path)
 
     s = sub_once(r'      <nav class="nav" id="nav">.*?</nav>\s*<a href="#contact" class="btn btn-primary header-cta">[^<]*</a>', lambda m: NAV, s, path)
     s = sub_once(r'        <ul class="hero-badges">.*?</ul>', lambda m: BADGES, s, path)
@@ -224,6 +329,8 @@ def patch(path, audit):
     s = sub_once(r'<meta name="description" content="[^"]*" />',
                  lambda m: f'<meta name="description" content="{meta_description(area)}" />', s, path)
     s = sub_once(r'"knowsAbout":\[[^\]]*\]', lambda m: KNOWS_ABOUT, s, path)
+    s = sub_once(r'<script type="application/ld\+json">(\{.*?\})</script>',
+                 lambda m: f'<script type="application/ld+json">{schema_block(m.group(1), slug)}</script>', s, path)
 
     # Homepage-parity footer cleanup (no-ops on pages that never had these blocks).
     s = re.sub(r'\s*<div class="footer-col footer-news">.*?</form>\s*</div>', "", s, count=1, flags=re.S)
@@ -248,6 +355,14 @@ def main(argv):
     for p in paths:
         fresh += patch(p, audit)
     print(f"patched {len(paths)} location pages")
+
+    hits = scan_forbidden(paths)
+    if hits:
+        print(f"{len(hits)} forbidden-phrase hit(s):")
+        for p, n, pat, line in hits:
+            print(f"  {p}:{n}  /{pat}/  {line}")
+        return 1
+    print(f"forbidden-phrase scan: clean across {len(paths)} pages")
 
     if not fresh:
         print("already patched, replacement audit skipped")
