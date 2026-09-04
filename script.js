@@ -67,7 +67,7 @@
 
   /* ---- Contact form → open a pre-filled email OR text with the visitor's info ---- */
   const CONTACT_EMAIL = 'contact@aetherpointadvisors.com';
-  const CONTACT_SMS = '+17373594061';
+  const CONTACT_SMS = '+15123488168';
   const form = document.getElementById('contactForm');
   const note = document.getElementById('formNote');
   if (form) {
