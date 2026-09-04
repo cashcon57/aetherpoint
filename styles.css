@@ -114,6 +114,7 @@ img, svg { display: block; max-width: 100%; }
 
 .header-cta { margin-left: 8px; }
 .nav-cta { display: none; }
+.nav .nav-cta, .nav .nav-cta:hover { color: #fff; }
 
 .nav-toggle { display: none; flex-direction: column; gap: 5px; background: none; border: 0; cursor: pointer; padding: 6px; margin-left: auto; }
 .nav-toggle span { width: 26px; height: 2.5px; background: var(--navy); border-radius: 2px; transition: .3s; }
@@ -289,7 +290,7 @@ a.area-chip:hover { background: var(--cyan); color: #fff; transform: translateY(
 /* ---------- CTA band ---------- */
 .cta-band { background: linear-gradient(120deg, var(--navy) 0%, var(--navy-2) 60%, #0d3b63 100%); position: relative; overflow: hidden; }
 .cta-band::before { content: ""; position: absolute; inset: 0; background: radial-gradient(600px 300px at 85% 50%, rgba(92,199,232,.28), transparent 60%); }
-.cta-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 64px 0; flex-wrap: wrap; }
+.cta-inner { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 64px 24px; flex-wrap: wrap; }
 .cta-inner h2 { color: #fff; font-size: clamp(1.6rem, 3vw, 2.3rem); }
 .cta-inner p { color: #c6d4e6; margin-top: 10px; max-width: 520px; }
 
@@ -385,6 +386,10 @@ a.area-chip:hover { background: var(--cyan); color: #fff; transform: translateY(
 .hero--dark .btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); }
 .hero--dark .btn-ghost:hover { background: rgba(255,255,255,.12); border-color: #fff; color: #fff; }
 .hero--dark .eyebrow { color: var(--cyan-2); }
+.hero--dark .hero-logo { filter: invert(1) hue-rotate(180deg); }
+.site-header--dark:not(.scrolled) .logo-img { filter: invert(1) hue-rotate(180deg); }
+.site-header--dark:not(.scrolled) .nav a { color: #dbe7f5; }
+.site-header--dark:not(.scrolled) .nav a:hover { color: #fff; }
 
 /* ---------- Featured service cards (top 3) ---------- */
 .service-card--featured { border-top: 4px solid var(--cyan); background: linear-gradient(180deg, #ffffff, #f2fbff); }
@@ -461,6 +466,7 @@ fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; }
   }
   .nav.open a { padding: 12px 0; border-bottom: 1px solid var(--line); }
   .nav.open .nav-cta { display: inline-flex; justify-content: center; padding: 14px 24px; margin-top: 12px; border-bottom: 0; }
+  .site-header--dark:not(.scrolled) .nav.open a:not(.nav-cta) { color: var(--slate); }
 }
 
 @media (max-width: 760px) {
