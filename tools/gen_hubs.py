@@ -259,8 +259,9 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     for hub in HUBS:
         path = os.path.join(out_dir, f'{hub["slug"]}.html')
+        content = render(hub)
         with open(path, "w") as f:
-            f.write(render(hub))
+            f.write(content)
         print(f'wrote services/{hub["slug"]}.html')
 
 
