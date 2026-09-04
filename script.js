@@ -65,55 +65,63 @@
   }, { threshold: 0.5 });
   nums.forEach((el) => statIO.observe(el));
 
-  /* ---- Contact form → open a pre-filled email OR text with the visitor's info ---- */
+  /* ---- Quote request form → open a pre-filled email OR text with the visitor's info ---- */
   const CONTACT_EMAIL = 'contact@aetherpointadvisors.com';
   const CONTACT_SMS = '+15123488168';
   const form = document.getElementById('contactForm');
   const note = document.getElementById('formNote');
+  const svcError = document.getElementById('svcError');
   if (form) {
     const getData = () => {
       const fd = new FormData(form);
+      const str = (k) => (fd.get(k) || '').toString().trim();
       return {
-        name: (fd.get('name') || '').toString().trim(),
-        email: (fd.get('email') || '').toString().trim(),
-        company: (fd.get('company') || '').toString().trim(),
-        message: (fd.get('message') || '').toString().trim(),
+        name: str('name'),
+        email: str('email'),
+        phone: str('phone'),
+        company: str('company'),
+        services: fd.getAll('services').map(String),
+        details: str('details'),
       };
     };
     const valid = () => {
-      if (form.checkValidity()) return true;
-      form.reportValidity();
-      return false;
+      const d = getData();
+      const svcOk = d.services.length > 0;
+      if (svcError) svcError.hidden = svcOk;
+      if (!form.checkValidity()) { form.reportValidity(); return false; }
+      if (!svcOk) { form.querySelector('.check-group input').focus(); return false; }
+      return true;
     };
+    const subjectFor = (d) => `Quote request — ${d.name}${d.company ? ' (' + d.company + ')' : ''}`;
     const openEmail = () => {
       const d = getData();
-      const subject = `IT assessment request — ${d.name}${d.company ? ' (' + d.company + ')' : ''}`;
-      const body = [`Name: ${d.name}`, `Email: ${d.email}`, `Company: ${d.company || '—'}`, '', d.message].join('\n');
-      note.hidden = false;
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const body = [
+        `Name: ${d.name}`,
+        `Email: ${d.email}`,
+        `Phone: ${d.phone || '—'}`,
+        `Company: ${d.company || '—'}`,
+        `Services: ${d.services.join(', ')}`,
+        '',
+        'Details:',
+        d.details,
+      ].join('\n');
+      if (note) note.hidden = false;
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subjectFor(d))}&body=${encodeURIComponent(body)}`;
     };
     const openText = () => {
       const d = getData();
       const msg =
-        `IT assessment request — ${d.name}${d.company ? ' (' + d.company + ')' : ''}. ` +
-        `${d.message}${d.email ? ' (reply: ' + d.email + ')' : ''}`;
-      note.hidden = false;
+        `${subjectFor(d)}. Services: ${d.services.join(', ')}. ${d.details}` +
+        `${d.email ? ' (reply: ' + d.email + ')' : ''}`;
+      if (note) note.hidden = false;
       window.location.href = `sms:${CONTACT_SMS}?body=${encodeURIComponent(msg)}`;
     };
-    // Primary submit = email; secondary button = text.
     form.addEventListener('submit', (e) => { e.preventDefault(); if (valid()) openEmail(); });
     const textBtn = document.getElementById('textBtn');
     if (textBtn) textBtn.addEventListener('click', () => { if (valid()) openText(); });
-  }
-
-  /* ---- Newsletter (demo) ---- */
-  const news = document.getElementById('newsForm');
-  if (news) {
-    news.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = news.querySelector('input');
-      if (input.value) { input.value = ''; input.placeholder = 'Subscribed ✓'; }
-    });
+    form.querySelectorAll('.check-group input').forEach((cb) =>
+      cb.addEventListener('change', () => { if (svcError && getData().services.length) svcError.hidden = true; })
+    );
   }
 
   /* ---- Reactive node-lattice background ---- */
