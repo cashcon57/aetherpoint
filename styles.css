@@ -401,7 +401,7 @@ a.area-chip:hover { background: var(--cyan); color: #fff; transform: translateY(
 .compare-table th { font-family: var(--display); font-size: 1.05rem; color: var(--navy); background: var(--bg-soft); }
 .compare-table th.label { background: transparent; }
 .compare-table th.win { color: #fff; background: var(--navy); }
-.compare-table .label { font-weight: 600; color: var(--navy); width: 22%; text-align: left; }
+.compare-table .label { font-family: var(--font); font-size: .98rem; font-weight: 600; color: var(--navy); width: 22%; }
 .compare-table td.win { color: var(--ink); font-weight: 500; background: #f2fbff; }
 .compare-table td.lose { color: var(--slate); }
 .compare-table tr:nth-child(even) .label { background: var(--bg-soft); }
@@ -470,7 +470,7 @@ fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; }
   .compare-table .label { width: auto; }
   .compare-table thead { display: none; }
   .compare-table tr { display: block; margin-bottom: 14px; border: 1px solid var(--line); }
-  .compare-table td { display: block; border-bottom: 0; }
+  .compare-table td, .compare-table th.label { display: block; border-bottom: 0; }
   .compare-table .label { background: var(--bg-soft); }
   .compare-table td.win::before { content: "With AetherPoint: "; font-weight: 700; color: var(--cyan); }
   .compare-table td.lose::before { content: "Going direct: "; font-weight: 700; color: var(--muted); }
