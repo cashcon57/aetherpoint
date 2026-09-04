@@ -429,6 +429,8 @@ a.area-chip:hover { background: var(--cyan); color: #fff; transform: translateY(
 .check-group input { width: 18px; height: 18px; accent-color: var(--cyan); margin: 0; }
 .field-group-label { display: block; font-weight: 600; color: var(--navy); font-size: .92rem; margin-bottom: 6px; }
 .field-error { color: #c0392b; font-size: .88rem; margin-top: 6px; }
+fieldset.field { border: 0; padding: 0; margin: 0; min-width: 0; }
+.field .muted { color: var(--muted); font-weight: 400; }
 
 /* ---------- Reveal animation ---------- */
 .reveal { opacity: 0; transform: translateY(26px); transition: opacity .6s ease, transform .6s ease; }
