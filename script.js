@@ -85,11 +85,15 @@
       };
     };
     const valid = () => {
+      if (!form.checkValidity()) { form.reportValidity(); return false; }
       const d = getData();
       const svcOk = d.services.length > 0;
       if (svcError) svcError.hidden = svcOk;
-      if (!form.checkValidity()) { form.reportValidity(); return false; }
-      if (!svcOk) { form.querySelector('.check-group input').focus(); return false; }
+      if (!svcOk) {
+        const first = form.querySelector('.check-group input');
+        if (first) first.focus();
+        return false;
+      }
       return true;
     };
     const subjectFor = (d) => `Quote request — ${d.name}${d.company ? ' (' + d.company + ')' : ''}`;
