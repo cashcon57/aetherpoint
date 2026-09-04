@@ -10,14 +10,13 @@ sys.path.insert(0, os.path.dirname(__file__))
 from hub_data import HUBS  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LUCIDE = "/Users/cashconway/CashWebDesign/assets/icons/lucide"
+LUCIDE = os.environ.get("LUCIDE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "icons"))
 SITE = "https://www.aetherpointadvisors.com"
 EMAIL = "contact@aetherpointadvisors.com"
 PHONE_TEL = "+15123488168"
 PHONE_SCHEMA = "+1-512-348-8168"
 PHONE_HUMAN = "(512) 348-8168"
 
-CHECK = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>'
 MAIL_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>'
 PHONE_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"/></svg>'
 PIN_ICO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>'
@@ -110,7 +109,17 @@ def footer():
     return f'''  <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <a href="../index.html" class="logo logo--light"><span class="logo-text">Aether<strong>Point</strong></span></a>
+        <a href="../index.html" class="logo logo--light">
+          <span class="logo-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="30" height="30">
+              <defs><radialGradient id="starF" cx="50%" cy="44%" r="62%">
+                <stop offset="0" stop-color="#ffffff"/><stop offset=".3" stop-color="#7ad6ef"/><stop offset=".7" stop-color="#2fa6dd"/><stop offset="1" stop-color="#2a86c4"/>
+              </radialGradient></defs>
+              <path d="M16 1.5 19.6 12.4 30.5 16 19.6 19.6 16 30.5 12.4 19.6 1.5 16 12.4 12.4Z" fill="url(#starF)"/>
+            </svg>
+          </span>
+          <span class="logo-text">Aether<strong>Point</strong></span>
+        </a>
         <p>Independent IT advisory for businesses that want enterprise-grade technology without the enterprise runaround.</p>
       </div>
       <div class="footer-col">
@@ -125,6 +134,29 @@ def footer():
         <a href="#contact">Contact</a>
       </div>
     </div>
+
+    <div class="container footer-areas">
+      <span>Service areas:</span>
+      <a href="../locations/austin.html">Austin</a>
+      <a href="../locations/round-rock.html">Round Rock</a>
+      <a href="../locations/cedar-park.html">Cedar Park</a>
+      <a href="../locations/georgetown.html">Georgetown</a>
+      <a href="../locations/leander.html">Leander</a>
+      <a href="../locations/pflugerville.html">Pflugerville</a>
+      <a href="../locations/san-marcos.html">San Marcos</a>
+      <a href="../locations/kyle.html">Kyle</a>
+      <a href="../locations/new-york.html">New York</a>
+      <a href="../locations/los-angeles.html">Los Angeles</a>
+      <a href="../locations/chicago.html">Chicago</a>
+      <a href="../locations/houston.html">Houston</a>
+      <a href="../locations/dallas.html">Dallas</a>
+      <a href="../locations/phoenix.html">Phoenix</a>
+      <a href="../locations/san-francisco.html">San Francisco</a>
+      <a href="../locations/seattle.html">Seattle</a>
+      <a href="../locations/denver.html">Denver</a>
+      <a href="../index.html#areas">+ more metros</a>
+    </div>
+
     <div class="container footer-bottom">
       <p>&copy; 2026 AetherPoint Digital Infrastructure Advisors LLC. All rights reserved.</p>
       <div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a></div>
