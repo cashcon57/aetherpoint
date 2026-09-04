@@ -140,6 +140,21 @@ TEXT_REPLACEMENTS = [
      'You get one advisor who answers the phone, 300+ carriers and providers behind them, and someone who actually knows Austin.'),
     ('with flat pricing and senior engineers on call.',
      'with one advisor on call and 300+ carriers and providers behind them.'),
+    # AetherPoint is paid by the providers, so it cannot promise flat monthly pricing.
+    ('<strong>Fixed, predictable pricing</strong><span>Flat monthly plans &mdash; no surprise invoices.</span>',
+     '<strong>Pricing you see up front</strong><span>Quotes before commitments &mdash; no surprise invoices.</span>'),
+    ('and source the best cloud and carrier deals &mdash; managed remotely, with straight answers and flat pricing.',
+     'and source the best cloud and carrier deals &mdash; managed remotely, with straight answers and one advisor on call.'),
+    ('and cut through carrier and software sprawl &mdash; with flat pricing and no runaround.',
+     'and cut through carrier and software sprawl &mdash; with one advisor on call and no runaround.'),
+    ('and connect you with the right providers &mdash; all managed remotely with flat pricing and a real human on call.',
+     'and connect you with the right providers &mdash; all managed remotely, with one advisor on call and 300+ carriers and providers behind them.'),
+    ('and negotiate the right telecom and software providers &mdash; with flat pricing and honest advice.',
+     'and negotiate the right telecom and software providers &mdash; with one advisor on call and honest advice.'),
+    ('and handle the sourcing &mdash; with flat pricing and a direct line to a 20-year veteran.',
+     'and handle the sourcing &mdash; with 300+ carriers and providers behind you and a direct line to a 20-year veteran.'),
+    ('and connect you with the right cloud and telecom providers &mdash; with flat, predictable pricing.',
+     'and connect you with the right cloud and telecom providers &mdash; with quotes up front and one advisor on call.'),
 ]
 
 
