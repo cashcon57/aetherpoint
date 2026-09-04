@@ -7,7 +7,9 @@
   <meta name="description" content="One advisor for cybersecurity, mobility, networking, cloud, and IoT. AetherPoint sources and negotiates solutions from 300+ providers for growing businesses." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" /></noscript>
   <link rel="icon" type="image/png" href="logo-transparent.png" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="canonical" href="https://cashcon57.github.io/aetherpoint/" />
@@ -35,7 +37,7 @@
       <a href="#contact" class="btn btn-primary header-cta">Get a Quote</a>
 
 
-      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -45,7 +47,7 @@
     <!-- ============ HERO ============ -->
     <section class="hero hero--dark" id="home">
       <div class="container hero-inner">
-        <img class="hero-logo" src="logo-hero.png" width="594" height="557" alt="AetherPoint Digital Infrastructure Advisors logo" />
+        <picture><source srcset="logo-hero.webp" type="image/webp" /><img class="hero-logo" src="logo-hero.png" width="594" height="557" alt="AetherPoint Digital Infrastructure Advisors logo" fetchpriority="high" /></picture>
         <span class="eyebrow">Independent IT Advisor &middot; Austin, TX</span>
         <h1>One Advisor for <span class="grad-text">Cybersecurity, Mobility, Networking &amp; Cloud</span></h1>
         <p class="hero-sub">AetherPoint sources, compares, and negotiates IT solutions from 300+ providers &mdash; so you get wholesale-grade pricing, one direct line, and an advisor who stays with you after the contract is signed.</p>
@@ -70,7 +72,7 @@
           <h2>IT solutions, sourced and managed by one advisor</h2>
           <p>Everything below comes through a single point of contact. Tell us what you need; we compare the providers, negotiate the pricing, and stay on the account.</p>
         </div>
-        <div class="card-grid card-grid--services">
+        <div class="card-grid">
           <article class="service-card service-card--featured">
             <span class="svc-icon" style="--c1:#16294b;--c2:#2a86c4"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"> <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" /> <path d="m9 12 2 2 4-4" /></svg></span>
             <h3>Cybersecurity</h3>
@@ -141,7 +143,7 @@
         </div>
 
         <div class="vendor-wall">
-          <p class="vendor-label">Independent &amp; vendor-neutral &mdash; I'll help you evaluate, source, and set up solutions from providers like these:</p>
+          <p class="vendor-label">Independent &amp; vendor-neutral &mdash; we'll help you evaluate, source, and set up solutions from providers like these:</p>
           <div class="vendor-logos">
             <img class="vendor" src="img/vendors/aws.svg" alt="Amazon Web Services" loading="lazy" />
             <img class="vendor" src="img/vendors/azure.svg" alt="Microsoft Azure" loading="lazy" />
@@ -222,7 +224,7 @@
       <div class="container">
         <div class="section-head">
           <span class="eyebrow">How We Work</span>
-          <h2>A proven path from problem to outcome</h2>
+          <h2>A clear path from problem to outcome</h2>
           <p>No surprises, no jargon. A clear methodology you can hold us accountable to.</p>
         </div>
 
@@ -468,7 +470,7 @@
 
     <div class="container footer-bottom">
       <p>&copy; 2026 AetherPoint Digital Infrastructure Advisors LLC. All rights reserved.</p>
-      <div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a></div>
+      <div class="footer-legal"><a href="#services">Services</a><a href="#contact">Contact</a></div>
     </div>
   </footer>
 
