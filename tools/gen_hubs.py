@@ -53,7 +53,7 @@ def nav():
         <a href="../index.html#services">Services</a>
         <a href="../index.html#solutions">Solutions</a>
         <a href="../index.html#why">Why Us</a>
-        <a href="../index.html#areas">Locations</a>
+        <a href="../index.html#areas">Service Areas</a>
         <a href="#contact">Contact</a>
         <a href="#contact" class="btn btn-primary nav-cta">Get a Quote</a>
       </nav>
@@ -132,7 +132,7 @@ def footer():
         <h4>Company</h4>
         <a href="../index.html#why">Why Us</a>
         <a href="../index.html#process">Our Process</a>
-        <a href="../index.html#areas">Locations</a>
+        <a href="../index.html#areas">Service Areas</a>
         <a href="#contact">Contact</a>
       </div>
     </div>
