@@ -251,16 +251,25 @@ def fonts_block(url):
             f'  <noscript><link rel="stylesheet" href="{url}" /></noscript>')
 
 
-def schema_block(payload, slug):
-    """Rebuild the ProfessionalService JSON-LD with a stable @id and a page url."""
+def schema_description(area):
+    return ("Independent IT advisor sourcing cybersecurity, mobility, advanced networking, "
+            f"cloud, and IoT solutions from 300+ providers for businesses in {area}.")
+
+
+def schema_block(payload, area):
+    """Rebuild the ProfessionalService JSON-LD as one org node.
+
+    Every page shares @id and url so same-@id nodes merge cleanly; areaServed stays
+    per page, and the page's own address lives in its <link rel="canonical">.
+    """
     d = json.loads(payload)
     out = {
         "@context": d["@context"],
         "@type": d["@type"],
         "@id": f"{SITE}/#org",
         "name": d["name"],
-        "url": f"{SITE}/locations/{slug}.html",
-        "description": d["description"],
+        "url": f"{SITE}/",
+        "description": schema_description(area),
         "areaServed": d["areaServed"],
         "email": d["email"],
         "telephone": d["telephone"],
@@ -330,7 +339,7 @@ def patch(path, audit):
                  lambda m: f'<meta name="description" content="{meta_description(area)}" />', s, path)
     s = sub_once(r'"knowsAbout":\[[^\]]*\]', lambda m: KNOWS_ABOUT, s, path)
     s = sub_once(r'<script type="application/ld\+json">(\{.*?\})</script>',
-                 lambda m: f'<script type="application/ld+json">{schema_block(m.group(1), slug)}</script>', s, path)
+                 lambda m: f'<script type="application/ld+json">{schema_block(m.group(1), area)}</script>', s, path)
 
     # Homepage-parity footer cleanup (no-ops on pages that never had these blocks).
     s = re.sub(r'\s*<div class="footer-col footer-news">.*?</form>\s*</div>', "", s, count=1, flags=re.S)
